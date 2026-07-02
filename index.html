@@ -701,6 +701,30 @@
   .cert-info-row .value { color: #1a1a1a; font-family: monospace; font-size: 11px; word-break: break-all; }
   .cert-info-row .value.normal-font { font-family: inherit; font-size: 12px; }
 
+  /* Toggle switch */
+  .toggle-switch { position: relative; display: inline-block; width: 40px; height: 22px; cursor: pointer; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: #ccc; border-radius: 22px; transition: 0.2s;
+  }
+  .toggle-track::before {
+    content: ""; position: absolute;
+    width: 16px; height: 16px; left: 3px; bottom: 3px;
+    background: #fff; border-radius: 50%; transition: 0.2s;
+  }
+  .toggle-switch input:checked + .toggle-track { background: #2271b3; }
+  .toggle-switch input:checked + .toggle-track::before { transform: translateX(18px); }
+
+  /* Reissue domain list */
+  .reissue-domain-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+  }
+  .reissue-domain-row:last-child { border-bottom: none; }
+  .reissue-domain-row.excluded { background: #fff8f8; color: #888; text-decoration: line-through; }
+
   /* Email preview */
   .email-preview {
     background: #f8f8f8;
@@ -1475,8 +1499,9 @@
             <span style="background:#e8f5e8;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:3px;font-weight:600;">Custom ACME</span>
             <span style="font-size:12px;color:#888;">· 5 subdomains</span>
           </div>
-          <div style="display:flex;align-items:center;gap:16px;">
+          <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:12px;color:#888;">Sectigo CA Limited · Expires Jul 30, 2026</span>
+            <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openManageModal();event.stopPropagation();">Manage</button>
             <span>▲</span>
           </div>
         </div>
@@ -1502,8 +1527,7 @@
                 <td style="padding:10px;color:#555;">Jul 30, 2026</td>
                 <td style="padding:10px;display:flex;gap:10px;flex-wrap:wrap;">
                   <a href="#" style="font-size:12px;color:#2271b3;text-decoration:none;">View Certificate</a>
-                  <a href="#" onclick="openVerifyModal('acme','acme-corp.org');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Secure this domain →</a>
-                  <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openManageModal()">Manage</button>
+                  <a href="#" onclick="openVerifyModal('acme','acme-corp.org');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Change Certificate</a>
                 </td>
               </tr>
               <!-- Active ACME -->
@@ -1515,8 +1539,8 @@
                 <td style="padding:10px;color:#555;">Jul 30, 2026</td>
                 <td style="padding:10px;display:flex;gap:10px;">
                   <a href="#" style="font-size:12px;color:#2271b3;text-decoration:none;">View Certificate</a>
-                  <a href="#" onclick="openVerifyModal('acme','www.acme-corp.org');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Secure this domain →</a>
-                  <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openManageModal()">Manage</button>
+                  <a href="#" onclick="openVerifyModal('acme','www.acme-corp.org');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Change Certificate</a>
+                  <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openSubdomainManageModal('www.acme-corp.org')">Manage</button>
                 </td>
               </tr>
               <!-- mail.acme-corp.org — Active ACME (same credentials as other subdomains) -->
@@ -1528,8 +1552,8 @@
                 <td style="padding:10px;color:#555;">Jul 30, 2026</td>
                 <td style="padding:10px;display:flex;gap:10px;">
                   <a href="#" style="font-size:12px;color:#2271b3;text-decoration:none;">View Certificate</a>
-                  <a href="#" onclick="openVerifyModal('acme','mail.acme-corp.org');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Secure this domain →</a>
-                  <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openManageModal()">Manage</button>
+                  <a href="#" onclick="openVerifyModal('acme','mail.acme-corp.org');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Change Certificate</a>
+                  <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openSubdomainManageModal('mail.acme-corp.org')">Manage</button>
                 </td>
               </tr>
               <!-- Active ACME -->
@@ -1541,8 +1565,8 @@
                 <td style="padding:10px;color:#555;">Jul 30, 2026</td>
                 <td style="padding:10px;display:flex;gap:10px;">
                   <a href="#" style="font-size:12px;color:#2271b3;text-decoration:none;">View Certificate</a>
-                  <a href="#" onclick="openVerifyModal('acme','shop.acme-corp.org');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Secure this domain →</a>
-                  <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openManageModal()">Manage</button>
+                  <a href="#" onclick="openVerifyModal('acme','shop.acme-corp.org');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Change Certificate</a>
+                  <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openSubdomainManageModal('shop.acme-corp.org')">Manage</button>
                 </td>
               </tr>
               <!-- Self-signed -->
@@ -1571,7 +1595,10 @@
             <span style="background:#e8f5e8;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:3px;font-weight:600;">✓ Let's Encrypt</span>
             <span style="font-size:12px;color:#888;">· 2 subdomains · Aug 12, 2026</span>
           </div>
-          <span>▼</span>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button class="btn btn-outline btn-small" style="font-size:11px;" onclick="openManageModal();event.stopPropagation();">Manage</button>
+            <span>▼</span>
+          </div>
         </div>
         <div class="parent-domain-body" style="background:#fafafa;">
           <table style="width:100%;border-collapse:collapse;font-size:12px;">
@@ -1592,7 +1619,7 @@
                 <td style="padding:10px;color:#555;">Aug 12, 2026</td>
                 <td style="padding:10px;display:flex;gap:10px;">
                   <a href="#" style="font-size:12px;color:#2271b3;text-decoration:none;">View Certificate</a>
-                  <a href="#" onclick="openVerifyModal('hopkins','hopkinslaw.net');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Secure this domain →</a>
+                  <a href="#" onclick="openVerifyModal('hopkins','hopkinslaw.net');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Change Certificate</a>
                 </td>
               </tr>
               <tr>
@@ -1603,7 +1630,7 @@
                 <td style="padding:10px;color:#555;">Aug 12, 2026</td>
                 <td style="padding:10px;display:flex;gap:10px;">
                   <a href="#" style="font-size:12px;color:#2271b3;text-decoration:none;">View Certificate</a>
-                  <a href="#" onclick="openVerifyModal('hopkins','www.hopkinslaw.net');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Secure this domain →</a>
+                  <a href="#" onclick="openVerifyModal('hopkins','www.hopkinslaw.net');return false;" style="font-size:12px;color:#2271b3;text-decoration:none;">Change Certificate</a>
                 </td>
               </tr>
             </tbody>
@@ -2583,68 +2610,290 @@
 
 <!-- ====================== MODALS ====================== -->
 
-<!-- Manage modal -->
+<!-- Manage modal (parent domain) -->
 <div class="modal-backdrop" id="modal-manage">
-  <div class="modal" style="max-width: 720px;">
+  <div class="modal" style="max-width:680px;">
     <div class="modal-header">
-      <h2>Manage Certificate — acme-corp.org</h2>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="background:#e8f1f9;color:#1f4e79;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;">Parent</span>
+        <h2 style="margin:0;">acme-corp.org</h2>
+      </div>
       <button class="modal-close" onclick="closeModal('modal-manage')">×</button>
     </div>
     <div class="modal-body">
 
-      <!-- Cert info summary -->
-      <div class="cert-info-table">
-        <div class="cert-info-row"><span class="label">Issuer</span><span class="value normal-font">Sectigo CA Limited <span style="background:#e8f1f9;color:#1f4e79;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;margin-left:4px;">VIA CUSTOM ACME</span></span></div>
-        <div class="cert-info-row"><span class="label">Valid until</span><span class="value normal-font">30 Jul 2026 (47 days)</span></div>
-        <div class="cert-info-row"><span class="label">Domains secured</span><span class="value normal-font">acme-corp.org, www, mail, webmail</span></div>
-      </div>
-
-      <!-- Three action cards (no "Lifecycle" heading) -->
-      <div class="action-card">
-        <div class="left">
-          <h4>Reissue</h4>
-          <p>Request a fresh certificate from your CA with the same domains and settings. Your CA's account key is reused; no re-entry needed.</p>
+      <!-- 1. Certificate info -->
+      <div style="margin-bottom:20px;">
+        <div class="section-title">Certificate</div>
+        <div style="font-size:12px;color:#444;">
+          <div style="display:grid;grid-template-columns:130px 1fr;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="color:#888;">Issuer</span>
+            <span>Sectigo CA Limited <span style="background:#e8f1f9;color:#1f4e79;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:600;margin-left:4px;">VIA CUSTOM ACME</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:130px 1fr;padding:5px 0;border-bottom:1px solid #f5f5f5;">
+            <span style="color:#888;">Valid until</span>
+            <span>30 Jul 2026 (47 days)</span>
+          </div>
+          <div style="display:grid;grid-template-columns:130px 1fr;padding:5px 0;">
+            <span style="color:#888;">Domains secured</span>
+            <span>acme-corp.org, www, mail, shop</span>
+          </div>
         </div>
-        <button class="btn btn-outline btn-small" onclick="openConfirmAction('Reissue certificate', 'This will request a fresh certificate from your CA using your stored credentials. The current certificate stays in place until the new one is installed.', 'Reissue', 'btn');">Execute</button>
       </div>
 
-      <div class="action-card">
-        <div class="left">
-          <h4>Modify Certificate</h4>
-          <p>Switch to a different certificate from the remaining two options. Opens the certificate selection modal.</p>
+      <!-- 2. ACME Credentials -->
+      <div style="margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div class="section-title" style="margin-bottom:0;">Custom ACME Credentials</div>
+          <button class="btn btn-outline btn-small" id="mg-creds-edit-btn" onclick="toggleCredsEdit()" style="font-size:11px;">&#9998; Edit</button>
         </div>
-        <button class="btn btn-outline btn-small" onclick="closeModal('modal-manage'); switchScreen('screen-3');">Execute</button>
-      </div>
-
-      <div class="action-card">
-        <div class="left">
-          <h4>Unassign</h4>
-          <p>Remove this certificate from the domain. The domain will become unsecured until a new certificate is issued or assigned.</p>
+        <div id="mg-creds-view">
+          <div style="display:grid;grid-template-columns:120px 1fr;row-gap:8px;font-size:12px;align-items:center;">
+            <span style="color:#888;">Directory URL</span>
+            <span style="background:#f7f7f7;border:1px solid #e4e4e4;border-radius:4px;padding:5px 10px;font-family:monospace;font-size:11px;">https://acme.sectigo.com/v2/DV</span>
+            <span style="color:#888;">EAB Key ID</span>
+            <span style="background:#f7f7f7;border:1px solid #e4e4e4;border-radius:4px;padding:5px 10px;font-family:monospace;font-size:11px;">xK9mP2vR••••••••</span>
+            <span style="color:#888;">EAB HMAC Key</span>
+            <span style="background:#f7f7f7;border:1px solid #e4e4e4;border-radius:4px;padding:5px 10px;font-family:monospace;font-size:11px;">••••••••••••••••</span>
+          </div>
         </div>
-        <button class="btn btn-outline btn-small" onclick="openConfirmAction('Unassign certificate', 'Your domain will become unsecured until a new certificate is issued. This action cannot be undone.', 'Unassign', 'btn btn-danger');">Execute</button>
-      </div>
-
-      <!-- Advanced settings -->
-      <div style="margin-top: 22px;">
-        <div class="section-title">Advanced Settings</div>
-        <div class="cert-info-table">
-          <div class="cert-info-row"><span class="label">ACME Directory URL</span><span class="value">https://acme.sectigo.com/v2/keyId/abc/directory</span></div>
-          <div class="cert-info-row"><span class="label">ACME Account URL</span><span class="value">https://acme.sectigo.com/acme/acct/...</span></div>
-          <div class="cert-info-row"><span class="label">Preferred challenge</span><span class="value normal-font">Automatic (HTTP-01 default; DNS-01 for wildcards)</span></div>
+        <div id="mg-creds-edit" style="display:none;">
+          <div style="margin-bottom:10px;">
+            <label style="font-size:12px;font-weight:600;color:#444;display:block;margin-bottom:4px;">Directory URL</label>
+            <input type="text" value="https://acme.sectigo.com/v2/DV" style="width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-family:monospace;">
+          </div>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:12px;font-weight:600;color:#444;display:block;margin-bottom:4px;">EAB Key ID</label>
+            <input type="text" value="xK9mP2vR" style="width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-family:monospace;">
+          </div>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:12px;font-weight:600;color:#444;display:block;margin-bottom:4px;">EAB HMAC Key</label>
+            <input type="password" placeholder="Enter new HMAC key" style="width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:12px;font-family:monospace;">
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-small" style="font-size:12px;" onclick="saveCredsEdit()">Save and validate</button>
+            <button class="btn btn-outline btn-small" style="font-size:12px;" onclick="cancelCredsEdit()">Cancel</button>
+          </div>
         </div>
-        <button class="btn btn-outline btn-small" onclick="closeModal('modal-manage'); openCredsModal(true);">Edit ACME credentials</button>
       </div>
 
-      <!-- Per-cert options -->
-      <div style="margin-top: 22px;">
-        <div class="section-title">Domain Options</div>
-        <div class="checkbox-row"><input type="checkbox" checked id="mhttps2"><label for="mhttps2"><strong>Force HTTPS redirect</strong> — 301 redirect from HTTP to HTTPS</label></div>
-        <div class="checkbox-row"><input type="checkbox" id="mhsts2"><label for="mhsts2"><strong>HSTS</strong> — browsers will only access this site via HTTPS</label></div>
+      <!-- 3. Certificate Actions -->
+      <div style="margin-bottom:20px;">
+        <div class="section-title">Certificate Actions</div>
+        <div class="action-card">
+          <div class="left">
+            <h4>Reissue</h4>
+            <p>Update the domain list and issue a new SAN certificate. Review and confirm which domains to include or exclude.</p>
+          </div>
+          <button class="btn btn-outline btn-small" onclick="closeModal('modal-manage'); openReissueModal('acme-corp.org', null, 'manage');">Reissue</button>
+        </div>
+        <div class="action-card">
+          <div class="left">
+            <h4>Modify Certificate</h4>
+            <p>Switch to a different certificate provider. Opens the certificate selection screen.</p>
+          </div>
+          <button class="btn btn-outline btn-small" onclick="closeModal('modal-manage'); switchScreen('screen-3');">Modify</button>
+        </div>
+        <div class="action-card" style="margin-bottom:0;">
+          <div class="left">
+            <h4>Unassign</h4>
+            <p>Remove this certificate from acme-corp.org and all its subdomains.</p>
+          </div>
+          <button class="btn btn-outline btn-small" style="color:#c62828;border-color:#c62828;" onclick="closeModal('modal-manage'); openUnassignModal('acme-corp.org');">Unassign</button>
+        </div>
       </div>
-    </div>
+
+      <!-- 4. Domain Settings -->
+      <div>
+        <div class="section-title">Domain Settings</div>
+
+        <!-- Force HTTPS redirect -->
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#1d2327;margin-bottom:2px;">Force HTTPS redirect</div>
+            <div style="font-size:12px;color:#666;">Redirects all HTTP traffic to HTTPS for acme-corp.org (301 redirect).</div>
+          </div>
+          <label class="toggle-switch" style="flex-shrink:0;margin-left:16px;">
+            <input type="checkbox" id="mg-https-parent" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+
+        <!-- HSTS -->
+        <div style="padding:12px 0;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#1d2327;margin-bottom:2px;">HSTS</div>
+              <div style="font-size:12px;color:#666;">Forces browsers to use HTTPS for acme-corp.org. Stays active until turned off.</div>
+            </div>
+            <label class="toggle-switch" style="flex-shrink:0;margin-left:16px;">
+              <input type="checkbox" id="mg-hsts-parent" onchange="toggleHstsPanel(this)">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+
+          <!-- HSTS expand panel -->
+          <div id="mg-hsts-panel" style="display:none;margin-top:14px;background:#f8f8f8;border:1px solid #e4e4e4;border-radius:8px;padding:14px 16px;">
+
+            <div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">Apply policy to</div>
+            <div style="display:flex;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin-bottom:14px;">
+              <button id="hsts-scope-domain" onclick="selectHstsScope('domain')"
+                style="flex:1;border:none;border-radius:0;font-size:12px;padding:8px 0;background:#2271b3;color:#fff;cursor:pointer;font-weight:600;">
+                This domain only
+              </button>
+              <button id="hsts-scope-all" onclick="selectHstsScope('all')"
+                style="flex:1;border:none;border-left:1px solid #ccc;border-radius:0;font-size:12px;padding:8px 0;background:#fff;color:#555;cursor:pointer;">
+                + all subdomains
+              </button>
+            </div>
+
+            <!-- Domain-only note -->
+            <div id="hsts-domain-note" style="font-size:12px;color:#666;">
+              Applies <code style="font-size:11px;background:#efefef;padding:1px 5px;border-radius:3px;">Strict-Transport-Security: max-age=31536000</code> to acme-corp.org only. Subdomains are unaffected.
+            </div>
+
+            <!-- All subdomains panel -->
+            <div id="hsts-all-panel" style="display:none;">
+              <div style="font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Subdomain Readiness</div>
+              <div style="border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;margin-bottom:12px;background:#fff;">
+                <div style="display:flex;justify-content:space-between;padding:9px 12px;border-bottom:1px solid #f0f0f0;font-size:12px;font-family:monospace;">
+                  <span>www.acme-corp.org</span><span style="color:#2e7d32;font-family:inherit;">✓ Secured</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:9px 12px;border-bottom:1px solid #f0f0f0;font-size:12px;font-family:monospace;">
+                  <span>mail.acme-corp.org</span><span style="color:#2e7d32;font-family:inherit;">✓ Secured</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:9px 12px;border-bottom:1px solid #f0f0f0;font-size:12px;font-family:monospace;">
+                  <span>shop.acme-corp.org</span><span style="color:#2e7d32;font-family:inherit;">✓ Secured</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 12px;background:#fffdf0;font-size:12px;font-family:monospace;">
+                  <span style="color:#b76e00;">api.acme-corp.org</span><span style="color:#b76e00;font-family:inherit;">⚠ Not secured</span>
+                </div>
+              </div>
+              <div style="background:#fff8ec;border:1px solid #f0d080;border-radius:6px;padding:12px 14px;margin-bottom:12px;">
+                <div style="font-size:12px;font-weight:600;color:#5a3e00;margin-bottom:4px;">⚠ 1 subdomain will become unreachable</div>
+                <div style="font-size:12px;color:#5a3e00;margin-bottom:10px;">Visitors will not be able to reach any subdomain under acme-corp.org without a valid certificate, including api.acme-corp.org and any subdomains added in the future.</div>
+                <button class="btn btn-small" style="font-size:11px;background:#b76e00;border-color:#b76e00;" onclick="closeModal('modal-manage'); openVerifyModal('acme','api.acme-corp.org');">Issue certificate for api.acme-corp.org →</button>
+              </div>
+              <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:#444;">
+                <input type="checkbox" id="hsts-ack-cb" style="margin-top:2px;flex-shrink:0;">
+                <span>I understand api.acme-corp.org will be inaccessible until I secure it.</span>
+              </label>
+            </div>
+
+          </div><!-- end hsts-panel -->
+        </div><!-- end HSTS row -->
+      </div><!-- end Domain Settings -->
+
+    </div><!-- end modal-body -->
     <div class="modal-footer">
       <button class="btn btn-outline" onclick="closeModal('modal-manage')">Close</button>
       <button class="btn">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reissue checklist modal -->
+<div class="modal-backdrop" id="modal-reissue">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <h2 id="reissue-modal-title">Reissue Certificate</h2>
+      <button class="modal-close" onclick="closeModal('modal-reissue')">×</button>
+    </div>
+    <div class="modal-body">
+      <p id="reissue-modal-intro" style="font-size:13px;color:#444;margin-bottom:16px;"></p>
+      <div id="reissue-domain-list" style="border:1px solid #e0e0e0;border-radius:6px;overflow:hidden;margin-bottom:14px;"></div>
+      <div id="reissue-info-box" style="font-size:12px;color:#1f4e79;background:#e8f1f9;border:1px solid #b8d4ec;border-radius:5px;padding:10px 12px;display:flex;gap:8px;align-items:flex-start;">
+        <span style="font-size:14px;margin-top:1px;">ℹ</span>
+        <span id="reissue-info-text"></span>
+      </div>
+      <div id="reissue-warn-box" style="display:none;font-size:12px;color:#5a1818;background:#fde8e8;border:1px solid #e8b0b0;border-radius:5px;padding:10px 12px;margin-top:10px;gap:8px;align-items:flex-start;">
+        <span style="font-size:14px;margin-top:1px;">⚠</span>
+        <span id="reissue-warn-text"></span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="reissue-back-btn" class="btn btn-outline" style="display:none;margin-right:auto;" onclick="closeModal('modal-reissue'); openModal('modal-manage');">← Back</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-reissue')">Cancel</button>
+      <button id="reissue-confirm-btn" class="btn" onclick="closeModal('modal-reissue')"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Unassign confirmation modal -->
+<div class="modal-backdrop" id="modal-unassign">
+  <div class="modal modal-confirm" style="max-width:440px;">
+    <div class="modal-header">
+      <h2>Unassign Certificate</h2>
+      <button class="modal-close" onclick="closeModal('modal-unassign')">×</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:#fff8ec;border:1px solid #f0d080;border-radius:6px;padding:14px 16px;margin-bottom:16px;">
+        <p id="unassign-warning-text" style="font-size:13px;color:#5a3e00;margin:0;line-height:1.5;"></p>
+      </div>
+      <p style="font-size:13px;color:#444;margin:0;">Are you sure you want to continue?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" style="margin-right:auto;" onclick="closeModal('modal-unassign'); openModal('modal-manage');">← Back</button>
+      <button class="btn btn-outline" onclick="closeModal('modal-unassign')">Cancel</button>
+      <button class="btn" style="background:#c62828;border-color:#c62828;" onclick="closeModal('modal-unassign')">🗑 Yes, unassign</button>
+    </div>
+  </div>
+</div>
+
+<!-- Subdomain Manage modal -->
+<div class="modal-backdrop" id="modal-subdomain-manage">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header">
+      <h2 id="subdomain-manage-title">Domain Settings</h2>
+      <button class="modal-close" onclick="closeModal('modal-subdomain-manage')">×</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Domain settings -->
+      <div style="margin-bottom:4px;">
+        <div class="section-title">Domain Settings</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#1d2327;margin-bottom:2px;">Force HTTPS redirect</div>
+            <div style="font-size:12px;color:#666;">Redirects all HTTP traffic to HTTPS for this domain (301 redirect).</div>
+          </div>
+          <label class="toggle-switch" style="flex-shrink:0;margin-left:16px;">
+            <input type="checkbox" id="sub-https-toggle" checked>
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#1d2327;margin-bottom:2px;">HSTS</div>
+            <div id="sub-hsts-desc" style="font-size:12px;color:#666;">Forces browsers to use HTTPS for this domain. Stays active until turned off.</div>
+            <div id="sub-hsts-inherited" style="display:none;font-size:12px;color:#888;margin-top:4px;font-style:italic;">🔒 Inherited from acme-corp.org — cannot be overridden per subdomain.</div>
+          </div>
+          <label class="toggle-switch" id="sub-hsts-toggle-wrap" style="flex-shrink:0;margin-left:16px;">
+            <input type="checkbox" id="sub-hsts-toggle">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+        <div style="padding:10px 0 4px;font-size:11px;color:#aaa;">
+          To apply HSTS across all subdomains at once, use Manage on acme-corp.org.
+        </div>
+      </div>
+
+      <!-- Exclude from certificate -->
+      <div style="margin-top:20px;">
+        <div class="section-title">Certificate</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#1d2327;margin-bottom:2px;">Exclude from Certificate</div>
+            <div style="font-size:12px;color:#666;">Remove this domain from the SAN certificate. A new certificate will be issued for the remaining domains.</div>
+          </div>
+          <button class="btn btn-outline btn-small" style="font-size:11px;flex-shrink:0;margin-left:16px;" id="sub-exclude-btn" onclick="excludeSubdomainFromCert()">Exclude</button>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-subdomain-manage')">Close</button>
+      <button class="btn" onclick="closeModal('modal-subdomain-manage')">Save changes</button>
     </div>
   </div>
 </div>
@@ -3647,7 +3896,205 @@
       }
     }, 2500);
   }
-  function openManageModal() { openModal('modal-manage'); }
+  function openManageModal() {
+    // Reset HSTS panel when reopening
+    var hstsCb = document.getElementById('mg-hsts-parent');
+    if (hstsCb && !hstsCb.checked) {
+      var panel = document.getElementById('mg-hsts-panel');
+      if (panel) panel.style.display = 'none';
+    }
+    openModal('modal-manage');
+  }
+
+  // ── Inline credential edit ────────────────────────────────────
+  function toggleCredsEdit() {
+    var view = document.getElementById('mg-creds-view');
+    var edit = document.getElementById('mg-creds-edit');
+    var btn  = document.getElementById('mg-creds-edit-btn');
+    var editing = (edit.style.display === 'block');
+    view.style.display = editing ? '' : 'none';
+    edit.style.display = editing ? 'none' : 'block';
+    btn.innerHTML      = editing ? '&#9998; Edit' : '';
+    btn.style.display  = editing ? '' : 'none';
+  }
+  function saveCredsEdit() {
+    var view = document.getElementById('mg-creds-view');
+    var edit = document.getElementById('mg-creds-edit');
+    var btn  = document.getElementById('mg-creds-edit-btn');
+    view.style.display = '';
+    edit.style.display = 'none';
+    btn.innerHTML      = '&#9998; Edit';
+    btn.style.display  = '';
+  }
+  function cancelCredsEdit() {
+    var view = document.getElementById('mg-creds-view');
+    var edit = document.getElementById('mg-creds-edit');
+    var btn  = document.getElementById('mg-creds-edit-btn');
+    view.style.display = '';
+    edit.style.display = 'none';
+    btn.innerHTML      = '&#9998; Edit';
+    btn.style.display  = '';
+  }
+
+  // ── HSTS panel (parent modal) ─────────────────────────────────
+  // Tracks whether parent HSTS is currently set to include all subdomains
+  var _parentHstsAllSubdomains = false;
+
+  function toggleHstsPanel(cb) {
+    var panel = document.getElementById('mg-hsts-panel');
+    panel.style.display = cb.checked ? 'block' : 'none';
+    if (cb.checked) {
+      selectHstsScope('domain');
+    } else {
+      // HSTS turned off — subdomains no longer inherit
+      _parentHstsAllSubdomains = false;
+    }
+  }
+
+  function selectHstsScope(scope) {
+    var domBtn   = document.getElementById('hsts-scope-domain');
+    var allBtn   = document.getElementById('hsts-scope-all');
+    var domNote  = document.getElementById('hsts-domain-note');
+    var allPanel = document.getElementById('hsts-all-panel');
+    if (scope === 'domain') {
+      _parentHstsAllSubdomains = false;
+      domBtn.style.cssText  = 'flex:1;border:none;border-radius:0;font-size:12px;padding:8px 0;background:#2271b3;color:#fff;cursor:pointer;font-weight:600;';
+      allBtn.style.cssText  = 'flex:1;border:none;border-left:1px solid #ccc;border-radius:0;font-size:12px;padding:8px 0;background:#fff;color:#555;cursor:pointer;';
+      domNote.style.display  = 'block';
+      allPanel.style.display = 'none';
+    } else {
+      _parentHstsAllSubdomains = true;
+      domBtn.style.cssText  = 'flex:1;border:none;border-radius:0;font-size:12px;padding:8px 0;background:#fff;color:#555;cursor:pointer;';
+      allBtn.style.cssText  = 'flex:1;border:none;border-left:1px solid #ccc;border-radius:0;font-size:12px;padding:8px 0;background:#2271b3;color:#fff;cursor:pointer;font-weight:600;';
+      domNote.style.display  = 'none';
+      allPanel.style.display = 'block';
+    }
+  }
+
+  // ── Reissue checklist modal ───────────────────────────────────
+  var _reissueExclude  = null;
+  var _reissueCalledFrom = null; // 'manage' | 'subdomain' | null
+
+  // All 5 domains — api.acme-corp.org is unchecked (not yet in cert)
+  var _acmeDomains = [
+    { id: 'acme-corp.org',      label: 'acme-corp.org',      tag: 'Primary', defaultChecked: true  },
+    { id: 'www.acme-corp.org',  label: 'www.acme-corp.org',  tag: '',        defaultChecked: true  },
+    { id: 'mail.acme-corp.org', label: 'mail.acme-corp.org', tag: '',        defaultChecked: true  },
+    { id: 'shop.acme-corp.org', label: 'shop.acme-corp.org', tag: '',        defaultChecked: true  },
+    { id: 'api.acme-corp.org',  label: 'api.acme-corp.org',  tag: '',        defaultChecked: false }
+  ];
+
+  function openReissueModal(parentDomain, excludeDomain, calledFrom) {
+    _reissueExclude    = excludeDomain;
+    _reissueCalledFrom = calledFrom || null;
+    var isExclude = (excludeDomain !== null && excludeDomain !== undefined);
+
+    document.getElementById('reissue-modal-title').textContent =
+      isExclude ? 'Exclude from Certificate' : 'Reissue Certificate';
+    document.getElementById('reissue-modal-intro').textContent =
+      isExclude
+        ? 'Review the updated domain list. The highlighted domain will be excluded and marked as Not Secured.'
+        : 'Select the domains to include in the new certificate. Checked domains will be in the new SAN cert; unchecked domains will be marked as Not Secured.';
+
+    // Build domain checklist
+    var list = document.getElementById('reissue-domain-list');
+    list.innerHTML = '';
+    _acmeDomains.forEach(function(d) {
+      var isTarget    = (d.id === excludeDomain);
+      var startChecked = isExclude ? !isTarget : d.defaultChecked;
+      var row = document.createElement('div');
+      row.className = 'reissue-domain-row' + (isTarget ? ' excluded' : '');
+      row.innerHTML =
+        '<input type="checkbox"' +
+          (startChecked ? ' checked' : '') +
+          (isExclude && isTarget ? ' disabled' : '') +
+          ' id="rd-' + d.id + '" onchange="updateReissueInfo()">' +
+        '<label for="rd-' + d.id + '" style="flex:1;cursor:pointer;">' +
+          d.label +
+          (d.tag ? ' <span style="font-size:10px;color:#888;">' + d.tag + '</span>' : '') +
+        '</label>' +
+        (isTarget ? '<span style="font-size:11px;color:#c62828;font-weight:600;background:#fde8e8;padding:2px 7px;border-radius:3px;">will be excluded</span>' : '') +
+        (!d.defaultChecked && !isTarget ? '<span style="font-size:11px;color:#888;background:#f0f0f0;padding:2px 7px;border-radius:3px;">not in current cert</span>' : '');
+      list.appendChild(row);
+    });
+
+    updateReissueInfo();
+
+    document.getElementById('reissue-confirm-btn').textContent =
+      isExclude ? 'Confirm and reissue' : 'Issue new certificate';
+
+    // Warn box
+    var warnBox = document.getElementById('reissue-warn-box');
+    if (isExclude) {
+      warnBox.style.display = 'flex';
+      document.getElementById('reissue-warn-text').textContent =
+        excludeDomain + ' will be removed from the certificate and marked as Not Secured. A new certificate will be issued for the remaining domains.';
+    } else {
+      warnBox.style.display = 'none';
+    }
+
+    // Back button — show only when coming from parent manage
+    var backBtn = document.getElementById('reissue-back-btn');
+    backBtn.style.display = (calledFrom === 'manage') ? 'inline-block' : 'none';
+
+    openModal('modal-reissue');
+  }
+
+  function updateReissueInfo() {
+    var checked = _acmeDomains.filter(function(d) {
+      var cb = document.getElementById('rd-' + d.id);
+      return cb && cb.checked;
+    });
+    var n = checked.length;
+    document.getElementById('reissue-info-text').textContent =
+      'A new SAN certificate will be issued for ' + n + ' domain' + (n !== 1 ? 's' : '') + '. DCV will run automatically in the background.';
+  }
+
+  // ── Unassign modal ────────────────────────────────────────────
+  function openUnassignModal(domain) {
+    document.getElementById('unassign-warning-text').innerHTML =
+      'Removing this certificate will leave <strong>' + domain + '</strong> and all its subdomains <strong>Not Secured</strong>. This takes effect immediately and cannot be undone automatically.';
+    openModal('modal-unassign');
+  }
+
+  // ── Subdomain Manage modal ────────────────────────────────────
+  var _currentSubdomain = null;
+
+  function openSubdomainManageModal(domain) {
+    _currentSubdomain = domain;
+    document.getElementById('subdomain-manage-title').textContent = 'Domain Settings — ' + domain;
+    // Reset HTTPS toggle
+    document.getElementById('sub-https-toggle').checked = true;
+
+    // HSTS: show inherited label if parent has includeSubDomains active, else show toggle
+    var toggleWrap  = document.getElementById('sub-hsts-toggle-wrap');
+    var inheritedEl = document.getElementById('sub-hsts-inherited');
+    var descEl      = document.getElementById('sub-hsts-desc');
+    var excludeBtn  = document.getElementById('sub-exclude-btn');
+
+    if (_parentHstsAllSubdomains) {
+      // Parent is enforcing HSTS + includeSubDomains — subdomain cannot override
+      toggleWrap.style.display  = 'none';
+      inheritedEl.style.display = 'block';
+      descEl.style.color        = '#aaa';
+      // Exclude still available
+      if (excludeBtn) excludeBtn.style.display = '';
+    } else {
+      // Independent subdomain toggle
+      toggleWrap.style.display  = '';
+      inheritedEl.style.display = 'none';
+      descEl.style.color        = '#666';
+      document.getElementById('sub-hsts-toggle').checked = false;
+      if (excludeBtn) excludeBtn.style.display = '';
+    }
+
+    openModal('modal-subdomain-manage');
+  }
+
+  function excludeSubdomainFromCert() {
+    closeModal('modal-subdomain-manage');
+    openReissueModal('acme-corp.org', _currentSubdomain, 'subdomain');
+  }
 
   function openConfirmAction(title, body, btnText, btnClass) {
     document.getElementById('confirm-title').textContent = title;
